@@ -1,0 +1,93 @@
+body{
+	font-family: arial;
+}
+.content{
+	width:800px;
+	margin:10px auto;
+}
+#gene-name{
+	text-align:center;
+}
+#gene-container{
+	width:800px;
+	padding:10px;
+}
+#gene-info{
+	border: thin black solid;
+	border-radius:5px;
+	padding:5px;
+}
+#controls{
+	text-align:center;
+	border:none;
+}
+#controls>input{
+	width:400px;
+}
+
+/* From https://github.com/Caged/d3-tip/blob/master/examples/example-styles.css */
+/* Creates a small triangle extender for the tooltip */
+.d3-tip:after {
+  box-sizing: border-box;
+  display: inline;
+  font-size: 10px;
+  width: 100%;
+  line-height: 1;
+  color: rgba(0, 0, 0, 0.8);
+  content: "\25BC";
+  position: absolute;
+  text-align: center;
+}
+
+/* Style northward tooltips differently */
+/* Northward tooltips */
+.d3-tip.n:after {
+  content: "\25BC";
+  margin: -1px 0 0 0;
+  top: 100%;
+  left: 0;
+  text-align: center;
+}
+
+/* Eastward tooltips */
+.d3-tip.e:after {
+  content: "\25C0";
+  margin: -4px 0 0 0;
+  top: 50%;
+  left: -8px;
+  display:none;
+}
+
+/* Southward tooltips */
+.d3-tip.s:after {
+  content: "\25B2";
+  margin: 0 0 1px 0;
+  top: -8px;
+  left: 0;
+  text-align: center;
+}
+
+/* Westward tooltips */
+.d3-tip.w:after {
+  content: "\25B6";
+  margin: -4px 0 0 -1px;
+  top: 50%;
+  left: 50%;
+  display:none;
+}
+
+
+
+.tooltip-key{
+    color:lightgrey;
+}
+.tooltip-key::after{
+    content:': ';
+}
+.tooltip-contents{
+	display:'inline-block';
+	padding:5px 15px;
+}
+.d3-tip span{
+    margin:0.1em auto;
+}
