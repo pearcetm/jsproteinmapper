@@ -300,14 +300,19 @@ jsProteinMapper = function(){
 			.on('mouseover',tooltip.show)
 		   .on('mouseout',tooltip.hide);
 		   
-		//create background rectangles   
+		//create background rectangles 
+		var trackOpacity = 0.5  
+		if(opts.trackFillColor == 'none'){
+			opts.trackFillColor = 'white';
+			trackOpacity = 0.0;
+		}
 		d3.selectAll('.track')
 			.append('rect')
 			.attr('width',w)
 			.attr('height',function(d){
 				return trackscale.bandwidth(); })
 			.attr('fill',opts.trackFillColor)
-			.attr('fill-opacity',0.5)
+			.attr('fill-opacity',trackOpacity)
 			.attr('stroke','gray')
 			.lower();
 			
