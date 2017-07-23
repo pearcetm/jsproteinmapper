@@ -61,9 +61,20 @@ jsProteinMapper = function(){
 	    })
 	    .direction(function(d){
 	    	var h = tooltip.html();
+	    	//console.log(d,this,$(h).height());
 	    	return 'n';
 	    });
-	
+	/*tooltip.hide = function(){
+		var nodel = d3.select('.d3-tip');
+      var bb=nodel.node().getBoundingClientRect();
+      var mx=event.clientX,
+            my=event.clientY;
+      if(mx<bb.left || mx>bb.right || my<bb.top || my>bb.bottom){
+      		nodel.style('opacity', 0).style('pointer-events', 'none')
+      }
+      
+      return tooltip;
+	}*/
 	
 	zoom_graphic = d3.zoom()
       .on('zoom', dispatchZoom);
