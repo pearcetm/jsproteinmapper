@@ -35,7 +35,7 @@ When jsproteinmapper.js is executed, a constructor function named `jsProteinMapp
 ```javascript
 var widget = new jsProteinMapper();
 ```
-Then, [configure](#configuration options) and [initialize](#init()) it.
+Then, [configure](#configuration-options) and [initialize](#init()) it.
 ```javascript
 widget.init(config);
 ```
@@ -181,6 +181,51 @@ When you are done configuring the widget, either during initialization or using 
 //now draw the widget
 widget.drawWidget();
 ```
+## Helper functions
+The jsProteinMapper widget provides a number of helper functions that provide default implementations of certain tasks. These functions are exposed in a structure named "helpers." Using these helper functions is **not required** - they are merely a convenient option for getting started.
+
+### helpers.pfamAjaxResults(callback)
+Querying data from pfam is often done using ajax, so `helpers.pfamAjaxResults()` *returns a function* suitable for use as the `success` callback of the ajax call. It also *takes a function as an argument* - this function is passed the parsed data structure and is responsible for ocntinuing to doing useful things like drawing the widget.
+
+**Argument:** callback function with prototype `function(protein_structure){...}`, to be called after parsing the data.
+**Return value:** function with prototype `function(data, status, jqXHR){...}`, suitable for use as an ajax success callback.
+
+To make it more clear what is happening, the implementation of the helper function is below.
+```javascript
+function pfamAjaxResults(callback){
+    //create a function suitable for use as an ajax success callback
+    function f(data,textStatus,jqXHR){		
+        var response=JSON.parse(data); //parse the json string
+	var r = response[0]; //extract the first result
+	// iterate over the functional regions
+	$.each(r.regions,function(i,e){
+	    //use the helper function makeBasicTooltip to add additional information about the region to a simple tooltip
+            var tt=makeBasicTooltip({
+                title:'Region: '+e.metadata.identifier+' ('+e.metadata.accession+')',
+                Description:e.metadata.description,
+                Coordinates:e.metadata.start+' - '+e.metadata.end+' (alignment region '+e.metadata.aliStart+' -'+e.metadata.aliEnd+')',
+                Source:e.metadata.database
+            });
+	    //add this object to the region as the "tooltip" field.
+	    e.tooltip = tt;
+        });
+	//pass the data on to the callback to continue processing
+        callback(r);
+    }
+    
+    //return the above function
+    return f;
+};
+```
+
+The
 
 ## Fetching protein structure from pfam
+When protein structure information is fetched from [pfam](pfam.xfam.org), the resulting JSON string must first be parsed to create a javascript structure. The results are returned in an array; since we are only dealing with a *single* result, the relevant information is in the *first element* of the array.
 
+```javascript
+results = JSON.parse(json_string_from_pfam); //parse the json string
+protein_structure = results[0]; //take first item from the array
+```
+
+By itself, these results are enough for the widget to draw the protein backbone and functional regions. Additional information about each region can be displayed in a tooltip by adding html to the "tooltip" field.
