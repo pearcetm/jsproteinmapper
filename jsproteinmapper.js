@@ -5,7 +5,6 @@ jsProteinMapper = function(){
 		pfamData:null, //response from pfam proxy
 		mutation:{},//{codon, annotation[{lable,text},... ] }
 		mutationTracks:[],//array of struct with key as name of mutation set and value as string of mutations
-		parentSelector:null,
 		width:775,
 		height:300,
 		fontSize:16,
