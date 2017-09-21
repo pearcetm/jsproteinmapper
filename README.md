@@ -48,7 +48,15 @@ The widget provides functions so that user scripts can interact in certains ways
 - [setTracks()](#setTracks())
 - [drawWidget()](#drawWidget())
 - [Helper functions](#helper-functions)
-  - test
+- [helpers.pfamAjaxResults](#helpers.pfamAjaxResults)
+- [helpers.parseMutationString](#helpers.parseMutationString)
+- [helpers.aggregate](#helpers.aggregate)
+  - Functions to generate tooltips:
+    - [helpers.tooltips.basicTooltip](#helpers.tooltips.basicTooltip)
+    - [helpers.tooltips.mutationTable](#helpers.tooltips.mutationTable)
+    - [helpers.tooltips.mutationPiechart](#helpers.tooltips.mutationPiechart)
+    - [helpers.tooltips.mutationBarchart](#helpers.tooltips.mutationBarchart)
+  
 
 ### init()
 Initializes the widget, creating html and svg elements for data visualization and graphical user interface.
@@ -184,10 +192,10 @@ widget.drawWidget();
 ## Helper functions
 The jsProteinMapper widget provides a number of helper functions that provide default implementations of certain tasks. These functions are exposed in a structure named "helpers." Using these helper functions is **not required** - they are merely a convenient option for getting started.
 
-### helpers.pfamAjaxResults(callback)
-Querying data from pfam is often done using ajax, so `helpers.pfamAjaxResults()` *returns a function* suitable for use as the `success` callback of the ajax call. It also *takes a function as an argument* - this function is passed the parsed data structure and is responsible for ocntinuing to doing useful things like drawing the widget.
+### helpers.pfamAjaxResults
+Querying data from pfam is often done asynchronously using AJAX, so `helpers.pfamAjaxResults()` *returns a function* suitable for use as the `success` callback of the ajax call. It also *takes a function as an argument* - this function is passed the parsed data structure and is responsible for continuing to doing useful things like drawing the widget.
 
-**Argument:** callback function with prototype `function(protein_structure){...}`, to be called after parsing the data.
+**Argument:** callback function with prototype `function(protein_structure){...}`, to be called after parsing the data.  
 **Return value:** function with prototype `function(data, status, jqXHR){...}`, suitable for use as an ajax success callback.
 
 To make it more clear what is happening, the implementation of the helper function is below.
@@ -218,7 +226,50 @@ function pfamAjaxResults(callback){
 };
 ```
 
-The
+See the helper function [helpers.tooltips.basicTooltip] for an explanation of the function `makeBasicTooltip` in the example code above.
+
+### helpers.parseMutationString
+This function creates structured data from a text string representation, which may come from a text file or database. It splits a text string with mutation data into an array of structures. The text string should be a repeating sequence of tuples in the order [gene_name, cdna_change, protein_change]. The string is parsed into structures which have fields {codon(numeric), pdot(string) cdna(string)}.
+
+```javascript
+function parseMutationString(geneName, mutations){
+    m = mutations.split(/\s+/);
+        mut = [];
+	for(ii=1;ii<m.length;ii+=3){
+	    var gene=m[ii];
+            var cdna=m[ii+1];
+	    var prot=m[ii+2];
+	    var codon = prot.match(/p.[a-zA-Z](\d+)/); //extract the location of the protein change
+	    
+	    //if the gene_name field matches the gene of interest, add it to the array
+	    if(gene.toLowerCase() == geneName.toLowerCase()){
+	        mut.push({
+		    codon: codon[1],
+		    pdot:prot,
+		    cdna:cdna
+		);
+	    }
+			
+	}  
+		
+    return mut;
+}
+```
+
+### helpers.aggregate
+This helper function takes a set of mutations and uses d3's nest functionality to aggregate the data set by codon, counting the number of alterations at each site, and within that, counting the number of each distinct alteration. This is useful for creating the meaningful tooltips that display the proportions of different alterations at each site within a protein structure.
+
+### helpers.tooltips.basicTooltip
+Displays text-based details
+
+### helpers.tooltips.mutationTable
+Displays [aggregated](#helpers.aggregate) mutation data in table form.
+
+### helpers.tooltips.mutationPiechart
+Displays [aggregated](#helpers.aggregate) mutation data in pie chart form.
+
+### helpers.tooltips.mutationBarchart
+Displays [aggregated](#helpers.aggregate) mutation data in bar chart form.
 
 ## Fetching protein structure from pfam
 When protein structure information is fetched from [pfam](pfam.xfam.org), the resulting JSON string must first be parsed to create a javascript structure. The results are returned in an array; since we are only dealing with a *single* result, the relevant information is in the *first element* of the array.
