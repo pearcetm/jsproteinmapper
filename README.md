@@ -43,19 +43,19 @@ widget.init(config);
 ## Application programming interface
 The widget provides functions so that user scripts can interact in certains ways.
 - [init()](#init())
-- [setPfamData()](#setPfamData())
-- [setMutation()](#setMutation())
-- [setTracks()](#setTracks())
-- [drawWidget()](#drawWidget())
+- [setPfamData()](#setPfamData)
+- [setMutation()](#setMutation)
+- [setTracks()](#setTracks)
+- [drawWidget()](#drawWidget)
 - [Helper functions](#helper-functions)
-- [helpers.pfamAjaxResults](#helpers.pfamAjaxResults)
-- [helpers.parseMutationString](#helpers.parseMutationString)
-- [helpers.aggregate](#helpers.aggregate)
+- [helpers.pfamAjaxResults](#helperspfamajaxresults)
+- [helpers.parseMutationString](#helpersparsemutationstring)
+- [helpers.aggregate](#helpersaggregate)
   - Functions to generate tooltips:
-    - [helpers.tooltips.basicTooltip](#helpers.tooltips.basicTooltip)
-    - [helpers.tooltips.mutationTable](#helpers.tooltips.mutationTable)
-    - [helpers.tooltips.mutationPiechart](#helpers.tooltips.mutationPiechart)
-    - [helpers.tooltips.mutationBarchart](#helpers.tooltips.mutationBarchart)
+    - [helpers.tooltips.basicTooltip](#helperstooltipsbasictooltip)
+    - [helpers.tooltips.mutationTable](#helperstooltipsmutationtable)
+    - [helpers.tooltips.mutationPiechart](#helperstooltipsmutationpiechart)
+    - [helpers.tooltips.mutationBarchart](#helperstooltipsmutationbarchart)
   
 
 ### init()
