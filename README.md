@@ -35,14 +35,14 @@ When jsproteinmapper.js is executed, a constructor function named `jsProteinMapp
 ```javascript
 var widget = new jsProteinMapper();
 ```
-Then, [configure](#configuration-options) and [initialize](#init()) it.
+Then, [configure](#configuration-options) and [initialize](#init) it.
 ```javascript
 widget.init(config);
 ```
 
 ## Application programming interface
 The widget provides functions so that user scripts can interact in certains ways.
-- [init()](#init())
+- [init()](#init)
 - [setPfamData()](#setPfamData)
 - [setMutation()](#setMutation)
 - [setTracks()](#setTracks)
