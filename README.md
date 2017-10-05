@@ -229,7 +229,7 @@ function pfamAjaxResults(callback){
 See the helper function [helpers.tooltips.basicTooltip] for an explanation of the function `makeBasicTooltip` in the example code above.
 
 ### helpers.parseMutationString
-This function creates structured data from a text string representation, which may come from a text file or database. It splits a text string with mutation data into an array of structures. The text string should be a repeating sequence of tuples in the order [gene_name, cdna_change, protein_change]. The string is parsed into structures which have fields {codon(numeric), pdot(string) cdna(string)}.
+This function creates structured data from a text string representation, which may come from a text file or database. It splits a text string with mutation data into an array of structures. The text string should be a repeating sequence of tuples in the order [gene_name, cdna_change, protein_change]. The string is parsed into structures which have fields {codon(numeric), pdot(string) cdna(string)}. The string is split on whitespace - newlines, tabs, and spaces all count - so do not put any whitespace inside a value.
 
 ```javascript
 function parseMutationString(geneName, mutations){
@@ -257,10 +257,12 @@ function parseMutationString(geneName, mutations){
 ```
 
 ### helpers.aggregate
-This helper function takes a set of mutations and uses d3's nest functionality to aggregate the data set by codon, counting the number of alterations at each site, and within that, counting the number of each distinct alteration. This is useful for creating the meaningful tooltips that display the proportions of different alterations at each site within a protein structure.
+This helper function takes a set of mutations and uses d3's nest functionality to aggregate the data set by codon, counting the number of alterations at each site, and within that, counting the number of each distinct alteration. This is useful for creating meaningful tooltips that display the proportions of different alterations at each site within a protein structure.
+
+The aggregate helper function expects an array of structures with `codon`, `pdot`, and `cdna` fields. See [helpers.parseMutationString](#helpersparsemutationstring) for an example.
 
 ### helpers.tooltips.basicTooltip
-Displays text-based details
+Displays text-based details of alteration frequency.
 
 ### helpers.tooltips.mutationTable
 Displays [aggregated](#helpers.aggregate) mutation data in table form.
@@ -280,3 +282,12 @@ protein_structure = results[0]; //take first item from the array
 ```
 
 By itself, these results are enough for the widget to draw the protein backbone and functional regions. Additional information about each region can be displayed in a tooltip by adding html to the "tooltip" field.
+
+Currently, pfam does not provide an API accessible for ajax calls. To work around this, you can set up a proxy server to generate the http request, and return the resulting textual information. For example, in php:
+
+```php
+$url = 'http://pfam.xfam.org/protein/' . $protein_id . '/graphic';
+$response_text = file_get_contents(url);
+```
+
+If you wish to use the app using ajax in this manner, make sure the proxy server is set up with the appropriate headers for Cross Origin Resource Sharing (CORS), if needed.
