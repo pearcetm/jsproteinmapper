@@ -8,7 +8,7 @@ $('#controls>button').on('click',function(){
 	if(s && s.length>0)
 	{
 		$.ajax({
-			url:'http://rest.genenames.org/fetch/symbol/'+s,
+			url:'https://rest.genenames.org/fetch/symbol/'+s,
 			//url:'https://tmpearce.com/genomics/genename/',
 			//data:{symbol:s},
 			type:'GET',
@@ -62,10 +62,12 @@ function fetchProteinStructInfo(id)
 {
 	var data={id: id};
 	$.ajax({
-		url:'http://tmpearce.com/genomics/graphic',
+		url:'https://pfam.xfam.org/protein/'+id+'/graphic',
 		type:'GET',
-		data:data,
-		success:jspm.helpers.pfamAjaxResults(function(r){jspm.setPfamData(r); jspm.drawWidget(); }),
+		success:jspm.helpers.pfamAjaxResults(function(r){
+			jspm.setPfamData(r); 
+			jspm.drawWidget(); 
+			}),
 		failure:function(data,textStatus,jqXHR){
 			console.log('Pfam proxy failed',JSON.stringify(data));
 		},

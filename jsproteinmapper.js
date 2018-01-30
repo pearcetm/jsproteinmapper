@@ -632,7 +632,8 @@ jsProteinMapper = function(){
 	//Helpers - functions to perform useful tasks, exposed in the API
 	function pfamAjaxResults(callback){
 		function f(data,textStatus,jqXHR){		
-			var response=JSON.parse(data);
+			var response = data;
+			if(typeof(data)=="string") response=JSON.parse(response);
 			var r = response[0];
 			$.each(r.regions,function(i,e){
 				var tt=makeBasicTooltip({
@@ -739,15 +740,15 @@ jsProteinMapper = function(){
 		var ttinfo={
 			title:'Codon '+mut.codon,
 			'# of mutations':mut.count,
-			'Distinct protein changes':e.values.length,
+			'Distinct protein changes':e.length,
 			};
-		var v = e.values.sort(function(a,b){
-			return b.values.length - a.values.length; });
+		var v = e.sort(function(a,b){
+			return b.length - a.length; });
 		if(v.length>5){
 			for(var i=0;i<4;++i){
 				var el=v[i];
 				var alt = '- ' + el.key;
-				ttinfo[alt] = el.values.length==1? el.values.length + ' occurrence' : el.values.length + ' occurrences';
+				ttinfo[alt] = el.value==1? el.value + ' occurrence' : el.value + ' occurrences';
 			}
 			ttinfo['Others'] = (v.length-4) +'('+ d3.sum(v.slice(4),function(d){
 				return d.values.length;}) +' total)';
@@ -756,7 +757,7 @@ jsProteinMapper = function(){
 			for(var i=0;i<v.length;++i){
 				var el=v[i];
 				var alt = '- ' + el.key;
-				ttinfo[alt] = el.values.length==1? el.values.length + ' occurrence' : el.values.length + ' occurrences';
+				ttinfo[alt] = el.value==1? el.value + ' occurrence' : el.value + ' occurrences';
 			}
 		}
 		var tt=makeBasicTooltip(ttinfo);

@@ -77,10 +77,13 @@
       			
       		}
       }
-      
+      console.log(coords.top,  poffset[0], scrollTop)
       nodel.classed(dir, true)
       	.style('top', Math.max(scrollTop, coords.top +  poffset[0]+scrollTop) + 'px')
       	.style('left', Math.max(scrollLeft, coords.left + poffset[1]+scrollLeft) + 'px')
+      /*	.style('top', Math.max(0, (coords.top +  poffset[0]) + scrollTop) + 'px')
+      	.style('left', Math.max(0, (coords.left + poffset[1]) + scrollLeft) + 'px')*/
+      	console.log(nodel);
       return tip;
     };
     // Public - hide the tooltip
