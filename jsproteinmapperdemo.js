@@ -9,8 +9,6 @@ $('#controls>button').on('click',function(){
 	{
 		$.ajax({
 			url:'https://rest.genenames.org/fetch/symbol/'+s,
-			//url:'https://tmpearce.com/genomics/genename/',
-			//data:{symbol:s},
 			type:'GET',
 			dataType:'xml',
 			success:uniprotCallback,
@@ -60,7 +58,6 @@ function uniprotCallback(data,textStatus,jqXHR){
 }
 function fetchProteinStructInfo(id)
 {
-	var data={id: id};
 	$.ajax({
 		url:'https://pfam.xfam.org/protein/'+id+'/graphic',
 		type:'GET',
@@ -94,7 +91,6 @@ function barTT(mut){
    var data={};
    nest.forEach(function(e){ data[e.key] = e.value; }); 	
    var series=stack([data]);
-   //console.log(data, series);
    var w = series.length * 45;
    
    var total = series[series.length-1][0][1];
