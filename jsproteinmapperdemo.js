@@ -66,7 +66,7 @@ function fetchProteinStructInfo(id)
 			jspm.drawWidget(); 
 			}),
 		failure:function(data,textStatus,jqXHR){
-			console.log('Pfam proxy failed',JSON.stringify(data));
+			console.log('Failed to fetch data from PFAM',JSON.stringify(data));
 		},
 	});
 }
