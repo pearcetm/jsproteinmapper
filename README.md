@@ -68,7 +68,7 @@ widget.init();
 `init` removes existing widgets, creates a new widget in a container element (`<div class='jsproteinmapper'></div>`), and appends it to a target element. By default, the target is `<body>`. This behavior can be customized by providing a selector for a target element. This, and other configuration options, are discussed in detail below.
 
 #### Configuration options
-The widget can be configured by passing in a structure with desired options defined as fields. The structure is then merged with default values (see below), so only non-default values need to be specified.
+The widget can be configured by passing in an object with desired options defined as fields. The object is then merged with default values (see below), so only non-default values need to be specified.
 
 A full set of the default configuration options is below:
 ```javascript
@@ -79,11 +79,11 @@ default_options = {
     //pfamData: data in string format defining the protein structure
 		pfamData:null, //parsed response from pfam, via a proxy server
     
-    //mutation: javascript structure containing information about the variant of interest
+    //mutation: javascript object containing information about the variant of interest
 		mutation:{},//fields: codon, annotation
     
-    //mutationTracks: array of structures, one per track
-		mutationTracks:[],//array of structures, each of which has fields: 'label' and 'data'
+    //mutationTracks: array of objects, one per track
+		mutationTracks:[],//array of objects, each of which has fields: 'label' and 'data'
     
     //width, height: dimensions of the widget (pixels)
 		width:775,
@@ -132,18 +132,21 @@ widget.init(options);
 ### setPfamData()
 Protein structure data from [pfam](pfam.xfam.org) can be passed into the widget as a [configuration option](#configuration-options), but can also be added after the widget has been created, using the setPfamData() function. See the [section on fetching pfam data](#fetching-protein-structure-from-pfam) for more information about this process, as well as the [helper function](#helper-functions) that provide a default parsing pipeline for pfam data.
 
-In this example, data is fetched from pfam via an ajax call to a proxy server, and the results are passed to the widget within the success callback.
+In this example, data is fetched from pfam via an ajax call, and the results are passed to the widget within the success callback.
 ```javascript
-var genename = 'braf';
-var proxy_url = 'www.your-proxy-server-here.com/' + genename;
+var uniprot_id = 'P15056'; //corresponds to BRAF
+//build the url that pfam expects
+var pfam_url = 'https://pfam.xfam.org/protein/'+uniprot_id+'/graphic';
 $.ajax({
-    url: proxy_url,
-    success: function(data, status, jqXHR){
-        var parsedData = JSON.parse(data); //parse JSON data
-        var pfamData = parsedData[0]; //unwrap the top-level array to get the structure we want
-        widget.setPfamData(pfamData); //pass it to the widget
-        widget.drawWidget(); //trigger a redraw
-    }
+	url:pfam_url,
+	type:'GET',
+	success:widget.helpers.pfamAjaxResults(function(r){ //use the helper function to add tooltips
+		jspm.setPfamData(r); //in the callback, set the pfam data 
+		jspm.drawWidget(); //then draw the widget
+		}),
+	failure:function(data,textStatus,jqXHR){
+		console.log('Failed to fetch data from PFAM',JSON.stringify(data));
+	},
 });
 
 ```
@@ -164,18 +167,18 @@ widget.drawWidget(); //trigger a redraw
 ### setTracks()
 Mutation tracks are bar graphs of other data that serve to provide context about the localization of mutations relative to protein structure. These data can be provided during initialization as a [configuration option](#configuration-options), but can also be added after the widget has been created, using the setTracks() function.
 
-Whether setting up mutation tracks during configuration or using the `setTracks()` function, the data should be organized as an **array of structures** - the array defines the order of the tracks, and each structure contains fields for the *label* and the *data* for that track. See the section on [mutation track data structures](#mutation-tracks) for details of how the track data should be structured.
+Whether setting up mutation tracks during configuration or using the `setTracks()` function, the data should be organized as an **array of objects** - the array defines the order of the tracks, and each object contains fields for the *label* and the *data* for that track. See the section on [mutation track data objects](#mutation-tracks) for details of how the track data should be structured.
 
 In the example below, two tracks of mutation data are added, to allow comparisons to external and internal databases. 
 ```javascript
 widget.setTracks([
     { 
         label:'COSMIC database',
-        data:cosmicDataStructure
+        data:cosmicDataString
     }, 
     {
         label:'In-house database',
-        data:inhouseDataStructure
+        data:inhouseDataString
     }
 ]);
 				
@@ -190,7 +193,7 @@ When you are done configuring the widget, either during initialization or using 
 widget.drawWidget();
 ```
 ## Helper functions
-The jsProteinMapper widget provides a number of helper functions that provide default implementations of certain tasks. These functions are exposed in a structure named "helpers." Using these helper functions is **not required** - they are merely a convenient option for getting started.
+The jsProteinMapper widget provides a number of helper functions that provide default implementations of certain tasks. These functions are exposed in an object named "helpers." Using these helper functions is **not required** - they are merely a convenient option for getting started.
 
 ### helpers.pfamAjaxResults
 Querying data from pfam is often done asynchronously using AJAX, so `helpers.pfamAjaxResults()` *returns a function* suitable for use as the `success` callback of the ajax call. It also *takes a function as an argument* - this function is passed the parsed data structure and is responsible for continuing to doing useful things like drawing the widget.
@@ -203,7 +206,8 @@ To make it more clear what is happening, the implementation of the helper functi
 function pfamAjaxResults(callback){
     //create a function suitable for use as an ajax success callback
     function f(data,textStatus,jqXHR){		
-        var response=JSON.parse(data); //parse the json string
+        var response = data;
+	if(typeof(data)=="string") response=JSON.parse(response); //parse the json string if needed
 	var r = response[0]; //extract the first result
 	// iterate over the functional regions
 	$.each(r.regions,function(i,e){
@@ -229,7 +233,7 @@ function pfamAjaxResults(callback){
 See the helper function [helpers.tooltips.basicTooltip] for an explanation of the function `makeBasicTooltip` in the example code above.
 
 ### helpers.parseMutationString
-This function creates structured data from a text string representation, which may come from a text file or database. It splits a text string with mutation data into an array of structures. The text string should be a repeating sequence of tuples in the order [gene_name, cdna_change, protein_change]. The string is parsed into structures which have fields {codon(numeric), pdot(string) cdna(string)}. The string is split on whitespace - newlines, tabs, and spaces all count - so do not put any whitespace inside a value.
+This function creates structured data from a text string representation, which may come from a text file or database. It splits a text string with mutation data into an array of objects. The text string should be a repeating sequence of tuples in the order [gene_name, cdna_change, protein_change]. The string is parsed into objects which have fields {codon(numeric), pdot(string) cdna(string)}. The string is split on whitespace - newlines, tabs, and spaces all count - so do not put any whitespace inside a value.
 
 ```javascript
 function parseMutationString(geneName, mutations){
@@ -259,7 +263,7 @@ function parseMutationString(geneName, mutations){
 ### helpers.aggregate
 This helper function takes a set of mutations and uses d3's nest functionality to aggregate the data set by codon, counting the number of alterations at each site, and within that, counting the number of each distinct alteration. This is useful for creating meaningful tooltips that display the proportions of different alterations at each site within a protein structure.
 
-The aggregate helper function expects an array of structures with `codon`, `pdot`, and `cdna` fields. See [helpers.parseMutationString](#helpersparsemutationstring) for an example.
+The aggregate helper function expects an array of objects with `codon`, `pdot`, and `cdna` fields. See [helpers.parseMutationString](#helpersparsemutationstring) for an example.
 
 ### helpers.tooltips.basicTooltip
 Displays text-based details of alteration frequency.
@@ -274,7 +278,7 @@ Displays [aggregated](#helpers.aggregate) mutation data in pie chart form.
 Displays [aggregated](#helpers.aggregate) mutation data in bar chart form.
 
 ## Fetching protein structure from pfam
-When protein structure information is fetched from [pfam](pfam.xfam.org), the resulting JSON string must first be parsed to create a javascript structure. The results are returned in an array; since we are only dealing with a *single* result, the relevant information is in the *first element* of the array.
+When protein structure information is fetched from [pfam](pfam.xfam.org), the resulting JSON string must first be parsed to create a javascript object. The results are returned in an array; since we are only dealing with a *single* result, the relevant information is in the *first element* of the array.
 
 ```javascript
 results = JSON.parse(json_string_from_pfam); //parse the json string
@@ -283,11 +287,38 @@ protein_structure = results[0]; //take first item from the array
 
 By itself, these results are enough for the widget to draw the protein backbone and functional regions. Additional information about each region can be displayed in a tooltip by adding html to the "tooltip" field.
 
-Currently, pfam does not provide an API accessible for ajax calls. To work around this, you can set up a proxy server to generate the http request, and return the resulting textual information. For example, in php:
+To retrieve the JSON data from pfam, create a URL that includes the Uniprot ID of the gene:
+```javascript
+var uniprot_id = 'P15056'; //corresponds to BRAF
+//build the url that pfam expects
+var pfam_url = 'https://pfam.xfam.org/protein/'+uniprot_id+'/graphic';
 
-```php
-$url = 'http://pfam.xfam.org/protein/' . $protein_id . '/graphic';
-$response_text = file_get_contents(url);
+//make an AJAX GET request
+$.ajax({
+	url:pfam_url,
+	type:'GET',
+	success:successCallbackFcn
+	},
+});
 ```
 
-If you wish to use the app using ajax in this manner, make sure the proxy server is set up with the appropriate headers for Cross Origin Resource Sharing (CORS), if needed.
+## Mutation tracks
+To provide data for the widget to use for drawing mutation tracks above the protein structure, pass in an array of objects. Each object must contain the title for the track in the "label" field, and the data in string form in the "data" field.
+
+```javascript
+//create a whitespace-separated list with tuples [genename cdna pdot]
+var mutationString = '
+	TP53	c.1176_1177insA	p.D393fs*>2  \
+	TP53	c.1176A>G	p.S392S  \
+	TP53	c.1175C>T	p.S392L  \
+	';
+
+var mutationTracks = []; //initialize empty array
+var track1 = {
+	label: 'Database #1',
+	data: mutationString
+};
+
+//add the object to 
+mutationTracks.push(track1);
+```
