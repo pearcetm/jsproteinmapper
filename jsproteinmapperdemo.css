@@ -1,0 +1,26 @@
+body{
+	font-family: arial;
+}
+.content{
+	width:800px;
+	margin:10px auto;
+}
+#gene-name{
+	text-align:center;
+}
+#gene-container{
+	width:800px;
+	padding:10px;
+}
+#gene-info{
+	border: thin black solid;
+	border-radius:5px;
+	padding:5px;
+}
+#controls{
+	text-align:center;
+	border:none;
+}
+#controls>input{
+	width:400px;
+}

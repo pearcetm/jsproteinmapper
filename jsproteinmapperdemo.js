@@ -29,21 +29,48 @@ function uniprotCallback(data,textStatus,jqXHR){
 		var id = response.find('[name="uniprot_ids"] str').text();
 		switch(s.toLowerCase()){
 			case "braf":
-				jspm.setMutation({codon:600,annotation:{'Protein alteration':'p.V600E'} });						
-				var brafMut=getMutations(s);
+				jspm.setVariant({codon:600,annotation:{'Protein alteration':'p.V600E'} });						
+				var variant_string=getVariants(s);
+				var parsed_variants = jspm.helpers.parseVariantString(s, variant_string);
+				//for demonstration purposes, split the array in two
+				var variants1 = parsed_variants.slice(0,Math.floor(parsed_variants.length/2));
+				var variants2 = parsed_variants.slice(Math.floor(parsed_variants.length/2));
 				
-				var bm = jspm.helpers.parseMutationString(s, brafMut);
-				var m1=jspm.helpers.aggregate(bm.slice(0,Math.floor(bm.length/2)), jspm.helpers.tooltips.mutationPiechart);
-				var m2=jspm.helpers.aggregate(bm.slice(Math.floor(bm.length/2)), jspm.helpers.tooltips.mutationBarchart);
-				jspm.setTracks([{label:'Data source 1 (e.g. COSMIC)',data:m1}, {label:'Data source 2 (e.g. in-house database)',data:m2}]);
+				var aggregated_variants1=jspm.helpers.aggregate(variants1, jspm.helpers.tooltips.variantPiechart);
+				var aggregated_variants2=jspm.helpers.aggregate(variants2, jspm.helpers.tooltips.variantBarchart);
+				
+				jspm.setTracks([
+					{
+						label:'Data source 1 (e.g. COSMIC)',
+						data:aggregated_variants1
+					},
+					{
+						label:'Data source 2 (e.g. in-house database)',
+						data:aggregated_variants2
+					}
+				]);
 				break;
 			case 'tp53':
-				jspm.setMutation({codon:245, annotation:{'Protein alteration':'p.G245S'}});
-				jspm.setTracks([{label:'Example data', data: jspm.helpers.aggregate(jspm.helpers.parseMutationString(s,getMutations(s)), jspm.helpers.tooltips.mutationTable) }]);
-				break;
+				jspm.setVariant({codon:245, annotation:{'Protein alteration':'p.G245S'}});
+				var parsedVariantString = jspm.helpers.parseVariantString(s, getVariants(s));
+				var trackData = jspm.helpers.aggregate(parsedVariantString);
+				jspm.setTracks([
+					{
+						label:'Example data', 
+						data: trackData,
+				   },
+			   ]);
+			   break;
 			case 'pik3ca':
-				jspm.setMutation({codon:1047, annotation:{'Protein alteration':'p.H1047R'}});
-				jspm.setTracks([{label:'Example data', data: jspm.helpers.aggregate(jspm.helpers.parseMutationString(s,getMutations(s))) }]);
+				jspm.setVariant({codon:1047, annotation:{'Protein alteration':'p.H1047R'}});
+				var parsedVariantString = jspm.helpers.parseVariantString(s, getVariants(s));
+				var trackData = jspm.helpers.aggregate(parsedVariantString);
+				jspm.setTracks([
+					{
+						label:'Example data', 
+						data: trackData,
+				   },
+			   ]);
 				break;
 				
 		}
@@ -80,7 +107,7 @@ function barTT(mut){
 	
 	
 	var dt = d3.select(tt[0]);
-	dt.append('h3').text(mut.wildtype+': '+mut.count+' mutations reported');
+	dt.append('h3').text(mut.wildtype+': '+mut.count+' variants reported');
 	
 		
 		
@@ -145,7 +172,7 @@ function barTT(mut){
 	return tt;
 }
 
-function getMutations(protein){
+function getVariants(protein){
 	var mut={
 		tp53:'\
 		GENE_NAME	CDNA_CHANGE	PROTEIN_CHANGE  \		TP53	c.1176_1177insA	p.D393fs*>2  \		TP53	c.1176A>G	p.S392S  \		TP53	c.1175C>T	p.S392L  \		TP53	c.1174T>C	p.S392P  \		TP53	c.1171G>A	p.D391N  \		TP53	c.1146delA	p.K382fs*>12  \		TP53	c.1147C>T	p.L383F  \		TP53	c.1143delA	p.K382fs*>12  \		TP53	c.1143A>T	p.K381N  \		TP53	c.1141delA	p.K382fs*>12  \		TP53	c.1140T>C	p.H380H  \		TP53	c.1137C>T	p.R379R  \		TP53	c.1136G>A	p.R379H  \		TP53	c.1129A>C	p.T377P  \		TP53	c.1128T>C	p.S376S  \		TP53	c.1126T>C	p.S376P  \		TP53	c.1126T>A	p.S376T  \		TP53	c.1126T>G	p.S376A  \		TP53	c.1122_1123insG	p.Q375fs*7  \		TP53	c.1123C>T	p.Q375*  \		TP53	c.1123C>A	p.Q375K  \		TP53	c.1118A>G	p.K373R  \		TP53	c.1108A>C	p.K370Q  \		TP53	c.1097_1100delCCAG	p.S367fs*2  \		TP53	c.1099delA	p.S367fs*3  \		TP53	c.1096T>G	p.S366A  \		TP53	c.994_1093del100	p.I332fs*5  \		TP53	c.1090G>A	p.A364T  \		TP53	c.1084delA	p.S362fs*8  \		TP53	c.1082G>A	p.G361E  \		TP53	c.1075C>T	p.P359S  \		TP53	c.1073A>T	p.E358V  \		TP53	c.1066delG	p.K357fs*13  \		TP53	c.1066G>T	p.G356W  \		TP53	c.1061A>G	p.Q354R  \		TP53	c.1060C>A	p.Q354K  \		TP53	c.1060C>T	p.Q354*  \		TP53	c.1049_1059del11	p.L350fs*28',

@@ -3,12 +3,12 @@ jsProteinMapper = function(){
 	var default_opts={
 		target:'body',
 		pfamData:null, //response from pfam proxy
-		mutation:{},//{codon, annotation[{lable,text},... ] }
-		mutationTracks:[],//array of struct with key as name of mutation set and value as string of mutations
+		variantOfInterest:{},//{codon, annotation[{lable,text},... ] }
+		variantTracks:[],//array of objects with properties "label" as name of variant set, and "data" as array of objects with properties "codon", "pdot" and "cdna"
 		width:775,
 		height:300,
 		fontSize:16,
-		mutationColor:'red',
+		variantColor:'red',
 		lollipopHeight:15,
 		lollipopHeadSize:6,
 		disulphideBridgeHeightIncrement:0,
@@ -20,6 +20,7 @@ jsProteinMapper = function(){
 	};
 
 	var container,
+			proteinlabelcontainer,
 	 		s,
 	 		loading, 
 	 		xscale, 
@@ -89,13 +90,13 @@ jsProteinMapper = function(){
 		//clear old widget if needed	
 		d3.select('.jsproteinmapper').remove();
 		//create new widget		
-		container=$('<div>',{class:'jsproteinmapper'})
-			.css({width:w,height:h,position:'relative',overflow:'hidden','box-sizing':'border-box'});
+		var widgetcontainer=$('<div>',{class:'jsproteinmapper'}).appendTo(opts.target);
+		container = $('<div>',{class:'svgcontainer'}).css({width:w,height:h});
 		//setup "loading" overlay
-		loading=$('<div>').css({position:'absolute',top:0,left:0,right:0,bottom:0,zIndex:101,backgroundColor:'white',textAlign:'center','box-sizing':'border-box'})
-			.text('Waiting for data...').appendTo(container);
+		loading=$('<div>',{class:'loading-overlay'}).text('Waiting for data...').appendTo(container);
 		//append widget to target element
-		container.appendTo(opts.target);
+		container.appendTo(widgetcontainer);
+		proteinlabelcontainer = $('<div>',{class:'proteinlabelcontainer'}).appendTo(widgetcontainer);
 		
 		//create svg element; store reference as variable "s"
 		s = d3.select(container.get(0))
@@ -132,8 +133,8 @@ jsProteinMapper = function(){
 		_this.drawWidget = function(options){
 			s.selectAll("*").remove();//clear svg element first
 			drawProteinStructure();
-			drawMutation();
-			drawMutationTracks();
+			drawVariant();
+			drawVariantTracks();
 			loading.hide();
 		};
 		//If these data are not available on initialization of the widget, they can be set later. Returns reference to widget for method chaining.
@@ -141,12 +142,12 @@ jsProteinMapper = function(){
 			opts.pfamData=pfamData;
 			return _this;
 		}	
-		_this.setMutation = function(mutation){
-			opts.mutation=mutation;
+		_this.setVariant = function(variant){
+			opts.variantOfInterest=variant;
 			return _this;
 		}
 		_this.setTracks = function(track_array){
-			opts.mutationTracks = track_array;
+			opts.variantTracks = track_array;
 			return _this;
 		}
 		
@@ -158,13 +159,13 @@ jsProteinMapper = function(){
 	//function defs below.
 	_this.helpers={
 		pfamAjaxResults: pfamAjaxResults,
-		parseMutationString: parseMutationString,
+		parseVariantString: parseVariantString,
 		aggregate:aggregate,
 		tooltips:{
 			basicTooltip:makeBasicTooltip,
-			mutationTable:mutationTable,
-			mutationPiechart:mutationPiechart,
-			mutationBarchart:mutationBarchart,
+			variantTable:variantTable,
+			variantPiechart:variantPiechart,
+			variantBarchart:variantBarchart,
 		},
 	}
 	
@@ -178,12 +179,21 @@ jsProteinMapper = function(){
 		scaleExtentX = seq_len/20;
 		
 		xscale.domain([0, seq_len]);
+		xaxis_bottom.scale(xscale);
+		xaxis_top.scale(xscale);
+		
 		s.append('g').attr('transform','translate(0,'+h+')').attr('class','xaxis bottom').call(xaxis_bottom);
 		
 		toNumber(r);
 		setHeights(r.markups,lollipopHeight,lollipopHeadSize,xscale);
 	
-			
+		var identifier = r.metadata.identifier;
+		var m =identifier.match(/([^_]*).*/i);
+		
+		if(m && m.length>1) identifier = m[1]; //strip trailing _HUMAN or other underscore-separated text from the identifier
+		identifier += ' (' + r.metadata.accession + ':'+r.metadata.database+')';
+		proteinlabelcontainer.text(identifier);
+		
 		var seqc = s.append('g')
 			.attr('class','sequence-container')
 			.attr('transform','translate(0,'+(h-(lollipopHeight+lollipopHeadSize))+')');
@@ -217,29 +227,29 @@ jsProteinMapper = function(){
 			.append(function(d){return makeAnnotation(d); });
 			
 	}	
-	function drawMutation(){
-		var d = opts.mutation;
+	function drawVariant(){
+		var d = opts.variantOfInterest;
 		if(!d.codon) return;
 		var info=Object.assign({},{title:'Variant of interest',Codon:d.codon}, d.annotation);
 		d.tooltip = makeBasicTooltip(info);
-		s.selectAll('.mutation')
+		s.selectAll('.variant')
 			.data([d])
 			.enter()
 			.append('rect')
-			.attr('class','mutation')
+			.attr('class','variant')
 			.attr('y',0)
 			.attr('height',h)
 			.attr('x',function(d){ return xscale(d.codon); })
 			.attr('width',function(d){ return Math.max(xscale(1)-xscale(0), 1); })
-			.attr('fill',opts.mutationColor)
+			.attr('fill',opts.variantColor)
 			.attr('stroke','none')
 			.on('mouseover',tooltip.show)
 			.on('mouseout',tooltip.hide);
 		
 		
 	}
-	function drawMutationTracks(){
-		tracks = opts.mutationTracks;
+	function drawVariantTracks(){
+		tracks = opts.variantTracks;
 		var numTracks = tracks.length;
 		if (numTracks==0) return;
 		s.append('g').attr('class','xaxis top').call(xaxis_top);
@@ -472,7 +482,7 @@ jsProteinMapper = function(){
 		d3.selectAll('.xaxis.bottom').call(xaxis_bottom);
 		d3.selectAll('.xaxis.top').call(xaxis_top);
 		
-		d3.selectAll('.mutation')
+		d3.selectAll('.variant')
 			.attr('x',function(d){ return newX(d.codon)-Math.max(newX(0.5)-newX(0), 0.5); })
 			.attr('width',function(d){ return Math.max(newX(1)-newX(0), 1); });
 			
@@ -613,10 +623,12 @@ jsProteinMapper = function(){
 			var ok=false;
 			var _this=d[i];
 			_this.height=h;
-			while(!ok){
+			while(!ok && opts.disulphideBridgeHeightIncrement){
 				var collisions=prev.filter(function(e){
-					return _this.height==e.height && !( (e.start<_this.start&&e.end<_this.start) || (e.start>_this.end&&e.end>_this.end) ); });
-					collisions.length==0?ok=true:_this.height+=increment; }
+					return _this.height==e.height && !( (e.start<_this.start&&e.end<_this.start) || (e.start>_this.end&&e.end>_this.end) ); 
+				});
+				collisions.length==0?ok=true:_this.height+=increment; 
+			}
 		}
 	}
 	function toNumber(r){
@@ -648,16 +660,16 @@ jsProteinMapper = function(){
 		}
 		return f;
 	};	
-	function parseMutationString(geneName, mutations){
-		m = mutations.split(/\s+/);
-		mut = [];
+	function parseVariantString(geneName, variants){
+		m = variants.split(/\s+/);
+		vArr = [];
 		for(ii=1;ii<m.length;ii+=3){
 			var gene=m[ii];
 			var cdna=m[ii+1];
 			var prot=m[ii+2];
 			var codon = prot.match(/p.[a-zA-Z](\d+)/);
 			if(gene.toLowerCase() == geneName.toLowerCase()){
-				mut.push({
+				vArr.push({
 					codon: codon[1],
 					pdot:prot,
 					cdna:cdna
@@ -666,17 +678,17 @@ jsProteinMapper = function(){
 			
 		}
 		
-		return mut;
+		return vArr;
 	}
-	function aggregate(mutations, tooltipGenerator){
+	function aggregate(variants, tooltipGenerator){
 		var m = d3.nest()
 			.key(function(d){return d.codon; })
-			.map(mutations);
+			.map(variants);
 		var nest = d3.nest()
 			.key(function(d){return d.codon; })
 			.key(function(d){return d.pdot; })
 			.key(function(d){return d.cdna; })
-			.entries(mutations);
+			.entries(variants);
 		var arr=nest.map(function(e,i){
 			var parseAlteration=e.values[0].key.match(/(p\.\S\d+)/);
 			var wt=parseAlteration[0];
@@ -733,13 +745,13 @@ jsProteinMapper = function(){
 	}
 	
 	
-	//mutationTable takes the results of a map operation on a nest
+	//variantTable takes the results of a map operation on a nest
 	//expects codon number to be the key
-	function mutationTable(mut){
+	function variantTable(mut){
 		var e = mut.nestedAlterations; //this is probably broken!
 		var ttinfo={
 			title:'Codon '+mut.codon,
-			'# of mutations':mut.count,
+			'# of variants':mut.count,
 			'Distinct protein changes':e.length,
 			};
 		var v = e.sort(function(a,b){
@@ -763,13 +775,13 @@ jsProteinMapper = function(){
 		var tt=makeBasicTooltip(ttinfo);
 		return tt;	
 	}
-	function mutationPiechart(mut){
+	function variantPiechart(mut){
 		var tt = $('<div>').css({border:'thin black solid',backgroundColor:'white',padding:'0.2em',display:'inline-block','text-align':'center'});
 		
 		var nest = mut.nestedAlterations;	
 		
 		var dt = d3.select(tt[0]);
-		dt.append('h4').text(mut.wildtype+': '+mut.count+' mutations reported');
+		dt.append('h4').text(mut.wildtype+': '+mut.count+' variants reported');
 		var svg = dt.append('svg')
 			.attr('width',260)
 			.attr('height',160)
@@ -810,7 +822,7 @@ jsProteinMapper = function(){
 			
 		return tt;
 	}
-	function mutationBarchart(mut){
+	function variantBarchart(mut){
 		var tt = $('<div>',{class:'tooltip-contents'}).css({border:'thin black solid',backgroundColor:'white','text-align':'center'});
 		
 		var dt = d3.select(tt[0]);
@@ -886,7 +898,7 @@ jsProteinMapper = function(){
 			
 		return tt;
 	}
-	function mutationBarchart2(mut, el){
+	function variantBarchart2(mut, el){
 		var tt = $('<div>').css({border:'thin black solid',backgroundColor:'white',padding:'0.2em',display:'inline-block','text-align':'center'});
 		
 		var nest = mut.nestedAlterations;	
