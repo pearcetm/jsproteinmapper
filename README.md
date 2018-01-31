@@ -43,10 +43,10 @@ widget.init(config);
 ## Application programming interface
 The widget provides functions so that user scripts can interact in certains ways.
 - [init()](#init)
-- [setPfamData()](#setPfamData)
-- [setMutation()](#setMutation)
-- [setTracks()](#setTracks)
-- [drawWidget()](#drawWidget)
+- [setPfamData()](#setpfamdata)
+- [setVariantOfInterest()](#setvariant)
+- [setTracks()](#settracks)
+- [drawWidget()](#drawwdget)
 - [Helper functions](#helper-functions)
 - [helpers.pfamAjaxResults](#helperspfamajaxresults)
 - [helpers.parseMutationString](#helpersparsemutationstring)
@@ -151,11 +151,11 @@ $.ajax({
 
 ```
 
-### setMutation()
-Information about a mutation/variant of interest can be passed into the widget during initialization as a [configuration option](#configuration-options), but can also be added after the widget has been created, using the setMutation() function. 
+### setVariant()
+Information about a variant of interest can be passed into the widget during initialization as a [configuration option](#configuration-options), but can also be added after the widget has been created, using the setVariant() function. 
 
 ```javascript
-widget.setMutation({
+widget.setVariant({
     codon:245, //position of the alteration in protein coordinates
     annotation:{
         'Protein alteration':'p.G245S' //text label to be displayed as a tooltip on mouseover/touch
@@ -165,11 +165,11 @@ widget.drawWidget(); //trigger a redraw
 ```
 
 ### setTracks()
-Mutation tracks are bar graphs of other data that serve to provide context about the localization of mutations relative to protein structure. These data can be provided during initialization as a [configuration option](#configuration-options), but can also be added after the widget has been created, using the setTracks() function.
+Mutation tracks are bar graphs of other data that serve to provide context about the localization of variants relative to the protein structure. These data can be provided during initialization as a [configuration option](#configuration-options), but can also be added after the widget has been created, using the setTracks() function.
 
-Whether setting up mutation tracks during configuration or using the `setTracks()` function, the data should be organized as an **array of objects** - the array defines the order of the tracks, and each object contains fields for the *label* and the *data* for that track. See the section on [mutation track data objects](#mutation-tracks) for details of how the track data should be structured.
+Whether setting up mutation tracks during configuration or using the `setTracks()` function, the data should be organized as an **array of objects** - the array defines the order of the tracks, and each object contains fields for the *label* and the *data* for that track. See the section on [variant track data objects](#variant-tracks) for details of how the track data should be structured.
 
-In the example below, two tracks of mutation data are added, to allow comparisons to external and internal databases. 
+In the example below, two tracks of variant data are added, to allow comparisons to external and internal databases. 
 ```javascript
 widget.setTracks([
     { 
@@ -261,7 +261,7 @@ function parseMutationString(geneName, mutations){
 ```
 
 ### helpers.aggregate
-This helper function takes a set of mutations and uses d3's nest functionality to aggregate the data set by codon, counting the number of alterations at each site, and within that, counting the number of each distinct alteration. This is useful for creating meaningful tooltips that display the proportions of different alterations at each site within a protein structure.
+This helper function takes a set of mutations and uses d3's nest functionality to aggregate the data set by codon, counting the number of variants at each site, and within that, counting the number of each distinct variant. This is useful for creating meaningful tooltips that display the proportions of different alterations at each site within a protein structure.
 
 The aggregate helper function expects an array of objects with `codon`, `pdot`, and `cdna` fields. See [helpers.parseMutationString](#helpersparsemutationstring) for an example.
 
@@ -302,8 +302,8 @@ $.ajax({
 });
 ```
 
-## Mutation tracks
-To provide data for the widget to use for drawing mutation tracks above the protein structure, pass in an array of objects. Each object must contain the title for the track in the "label" field, and the data in string form in the "data" field.
+## Variant tracks
+To provide data for the widget to use for drawing variant tracks above the protein structure, pass in an array of objects. Each object must contain the title for the track in the "label" field, and the data object in the "data" field.
 
 ```javascript
 //create a whitespace-separated list with tuples [genename cdna pdot]
