@@ -2,7 +2,7 @@
 jsProteinMapper is a browser-based tool for interactive visualization of genomic alterations in relation to the protein structure of the gene product.
 
 # Demo
-Checkout it out @ https://bl.ocks.org/pearcetm/raw/253c2552ad6ed617c7601c09918998e4/  
+<a href="https://bl.ocks.org/pearcetm/raw/253c2552ad6ed617c7601c09918998e4/" target="_blank">Checkout it out</a>  
 
 This guide contains information for:
 - [users](#for-users): how to use the widget to interact with your data
