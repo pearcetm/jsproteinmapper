@@ -16,12 +16,12 @@ By default, the structure of the whole protein is displayed in the widget. Howev
 
 - Using the scroll wheel (mouse - anywhere on the widget) or pinch gesture (touchscreen - on the protein structure), you can control the zoom on the X-axis to get a closer look. Click (or touch) and drag lets you move the whole structure left or right.
 - Double-clicking on the protein structure will also zoom in (X-axis)
-- A double-click on a *mutation track* will zoom in on the *Y-axis of that track*, to show lower-frequency events more clearly. If you zoom in too far, the zoom level resets.
-- If you are using a PC, the mutation tracks can also be zoomed in and out using the mouse wheel while holding the shift key. On a touch-enabled device, you can zoom on mutation tracks using pinch gestures on the track of interest.
-- To zoom directly to an area of interest, hold shift while clicking and dragging. This will draw a rectangle, and the widget will zoom to that region when you release the mouse button. If this is done on a mutation track, you can zoom in X and Y simultaneously.
+- A double-click on a *variant track* will zoom in on the *Y-axis of that track*, to show lower-frequency events more clearly. If you zoom in too far, the zoom level resets.
+- If you are using a PC, the variant tracks can also be zoomed in and out using the mouse wheel while holding the shift key. On a touch-enabled device, you can zoom on variant tracks using pinch gestures on the track of interest.
+- To zoom directly to an area of interest, hold shift while clicking and dragging. This will draw a rectangle, and the widget will zoom to that region when you release the mouse button. If this is done on a variant track, you can zoom in X and Y simultaneously.
 
 ## Showing more information
-To see more information - for example, details of a protein domain or a mutation - simply hover your mouse (or tap a touchscreen) to reveal a popup tooltip. 
+To see more information - for example, details of a protein domain or a variant - simply hover your mouse (or tap a touchscreen) to reveal a popup tooltip. 
 
 # For developers
 ## Adding the widget to a webpage
@@ -52,13 +52,13 @@ The widget provides functions so that user scripts can interact in certains ways
 - [drawWidget()](#drawwdget)
 - [Helper functions](#helper-functions)
 - [helpers.pfamAjaxResults](#helperspfamajaxresults)
-- [helpers.parseMutationString](#helpersparsemutationstring)
+- [helpers.parseVariantString](#helpersparsevariantstring)
 - [helpers.aggregate](#helpersaggregate)
   - Functions to generate tooltips:
     - [helpers.tooltips.basicTooltip](#helperstooltipsbasictooltip)
-    - [helpers.tooltips.mutationTable](#helperstooltipsmutationtable)
-    - [helpers.tooltips.mutationPiechart](#helperstooltipsmutationpiechart)
-    - [helpers.tooltips.mutationBarchart](#helperstooltipsmutationbarchart)
+    - [helpers.tooltips.variantTable](#helperstooltipsvarianttable)
+    - [helpers.tooltips.variantPiechart](#helperstooltipsvariantpiechart)
+    - [helpers.tooltips.variantBarchart](#helperstooltipsvariantbarchart)
   
 
 ### init()
@@ -82,11 +82,11 @@ default_options = {
     //pfamData: data in string format defining the protein structure
 		pfamData:null, //parsed response from pfam, via a proxy server
     
-    //mutation: javascript object containing information about the variant of interest
-		mutation:{},//fields: codon, annotation
+    //variantOfInterest: javascript object containing information about the variant of interest
+		variantOfInterest:{},//fields: codon, annotation
     
-    //mutationTracks: array of objects, one per track
-		mutationTracks:[],//array of objects, each of which has fields: 'label' and 'data'
+    //variantTracks: array of objects, one per track
+		variantTracks:[],//array of objects, each of which has fields: 'label' and 'data'
     
     //width, height: dimensions of the widget (pixels)
 		width:775,
@@ -95,8 +95,8 @@ default_options = {
     //fontSize: font size of the text
 		fontSize:16,
     
-    //mutationColor: string representation of the color to highlight the variant of interest
-		mutationColor:'red',
+    //variantColor: string representation of the color to highlight the variant of interest
+		variantColor:'red',
     
     //geometry of the protein functional domain annotations
 		lollipopHeight:15,
@@ -107,23 +107,23 @@ default_options = {
 		regionHeight:16,
 		sequenceHeight:7,
     
-    //tracksYOffset: spacing, in pixels, between the protein structure and where the graphs of mutation tracks start
+    //tracksYOffset: spacing, in pixels, between the protein structure and where the graphs of variant tracks start
 		tracksYOffset:20,
     
     //padding: padding surrounding the widget, in pixels
 		padding:25,
     
-    //trackFillColor: background color for mutation tracks
+    //trackFillColor: background color for variant tracks
 		trackFillColor:'none'
 	};
 ```
 
-#### Example: initalize the widget with a mutation (variant of interest), some non-default geometry options, and an existing html target
+#### Example: initalize the widget with a variant of interest, some non-default geometry options, and an existing html target
 ```javascript
 var options = {
         sequenceHeight: 10,
         padding: 50,
-        mutation: {
+        variantOfInterest: {
             codon: 600,
             annotation: {'Protein alteration':'p.V600E'}
         },
@@ -168,9 +168,9 @@ widget.drawWidget(); //trigger a redraw
 ```
 
 ### setTracks()
-Mutation tracks are bar graphs of other data that serve to provide context about the localization of variants relative to the protein structure. These data can be provided during initialization as a [configuration option](#configuration-options), but can also be added after the widget has been created, using the setTracks() function.
+Variant tracks are bar graphs of other data that serve to provide context about the localization of variants relative to the protein structure. These data can be provided during initialization as a [configuration option](#configuration-options), but can also be added after the widget has been created, using the setTracks() function.
 
-Whether setting up mutation tracks during configuration or using the `setTracks()` function, the data should be organized as an **array of objects** - the array defines the order of the tracks, and each object contains fields for the *label* and the *data* for that track. See the section on [variant track data objects](#variant-tracks) for details of how the track data should be structured.
+Whether setting up variant tracks during configuration or using the `setTracks()` function, the data should be organized as an **array of objects** - the array defines the order of the tracks, and each object contains fields for the *label* and the *data* for that track. See the section on [variant track data objects](#variant-tracks) for details of how the track data should be structured.
 
 In the example below, two tracks of variant data are added, to allow comparisons to external and internal databases. 
 ```javascript
@@ -235,12 +235,14 @@ function pfamAjaxResults(callback){
 
 See the helper function [helpers.tooltips.basicTooltip] for an explanation of the function `makeBasicTooltip` in the example code above.
 
-### helpers.parseMutationString
-This function creates structured data from a text string representation, which may come from a text file or database. It splits a text string with mutation data into an array of objects. The text string should be a repeating sequence of tuples in the order [gene_name, cdna_change, protein_change]. The string is parsed into objects which have fields {codon(numeric), pdot(string) cdna(string)}. The string is split on whitespace - newlines, tabs, and spaces all count - so do not put any whitespace inside a value.
+### helpers.parseVariantString
+This function creates structured data from a text string representation, which may come from a text file or database. It splits a text string with variant data into an array of objects. The text string should be a repeating sequence of tuples in the order [gene_name, cdna_change, protein_change]. The string is parsed into objects which have fields {codon(numeric), pdot(string) cdna(string)}. The string is split on whitespace - newlines, tabs, and spaces all count - so do not put any whitespace inside a value.
+
+It returns an array of objects, each of which contains properties `codon`, `pdot`, and `cdna`.
 
 ```javascript
-function parseMutationString(geneName, mutations){
-    m = mutations.split(/\s+/);
+function parseVariantString(geneName, variants){
+    m = variants.split(/\s+/);
         mut = [];
 	for(ii=1;ii<m.length;ii+=3){
 	    var gene=m[ii];
@@ -264,21 +266,33 @@ function parseMutationString(geneName, mutations){
 ```
 
 ### helpers.aggregate
-This helper function takes a set of mutations and uses d3's nest functionality to aggregate the data set by codon, counting the number of variants at each site, and within that, counting the number of each distinct variant. This is useful for creating meaningful tooltips that display the proportions of different alterations at each site within a protein structure.
+This helper function takes a set of variants and uses d3's nest functionality to aggregate the data set by codon, counting the number of variants at each site, and within that, counting the number of each distinct variant. This is useful for creating meaningful tooltips that display the proportions of different alterations at each site within a protein structure.
 
-The aggregate helper function expects an array of objects with `codon`, `pdot`, and `cdna` fields. See [helpers.parseMutationString](#helpersparsemutationstring) for an example.
+The aggregate helper function expects an array of objects with `codon`, `pdot`, and `cdna` fields. See [helpers.parseVariantString](#helpersparsevariantstring) for an example.
+
+It returns an array of objects. Each object has the following format:
+
+```javascript
+object = {
+	codon: 1, //position in the protein structure
+	count: 5, //number of alterations at this position
+	nestedAlterations: [Array of Objects]
+};
+```
+
+The most important fields are `codon` and `count`: these define the x and y location of the bars in the histogram representing the number of alterations at that location. The helper function also creates an array of objects and stores in the the `nestedAlterations` field. This array is used by the tooltip generator functions to create the bar charts, pie charts, or other display of the breakdown of variants reported at each position.
 
 ### helpers.tooltips.basicTooltip
 Displays text-based details of alteration frequency.
 
-### helpers.tooltips.mutationTable
-Displays [aggregated](#helpers.aggregate) mutation data in table form.
+### helpers.tooltips.variantTable
+Displays [aggregated](#helpers.aggregate) variant data in table form.
 
-### helpers.tooltips.mutationPiechart
-Displays [aggregated](#helpers.aggregate) mutation data in pie chart form.
+### helpers.tooltips.variantPiechart
+Displays [aggregated](#helpers.aggregate) variant data in pie chart form.
 
-### helpers.tooltips.mutationBarchart
-Displays [aggregated](#helpers.aggregate) mutation data in bar chart form.
+### helpers.tooltips.variantBarchart
+Displays [aggregated](#helpers.aggregate) variant data in bar chart form.
 
 ## Fetching protein structure from pfam
 When protein structure information is fetched from [pfam](pfam.xfam.org), the resulting JSON string must first be parsed to create a javascript object. The results are returned in an array; since we are only dealing with a *single* result, the relevant information is in the *first element* of the array.
@@ -306,22 +320,46 @@ $.ajax({
 ```
 
 ## Variant tracks
-To provide data for the widget to use for drawing variant tracks above the protein structure, pass in an array of objects. Each object must contain the title for the track in the "label" field, and the data object in the "data" field.
+To provide data for the widget to use for drawing variant tracks above the protein structure, pass in an array of objects. Each object must contain the title for the track in the "label" field, and an array of objects in the "data" field.
+
+The data must be an array of objects; each object should contain properties `codon` and `count`. Additional propertiescan be optionally included and used to create tooltips with more detailed information about the variants reported at each location. See [helpers.aggregate](#helpersaggregate) for more information.
+
+```javascript
+var data = [
+	{
+		codon: 1,
+		count: 5
+	},
+	{
+		codon: 2,
+		count: 3
+	},
+	{
+		codon: 3,
+		count: 15
+	}
+];
+```
+
+Beginning from a whitespace separated list of tuples, the [parseVariantString](#helpersparsevariantstring) and [aggregate](#helpersaggregate) helper functions to create an appropriate array.
 
 ```javascript
 //create a whitespace-separated list with tuples [genename cdna pdot]
-var mutationString = '
+var variantString = '
 	TP53	c.1176_1177insA	p.D393fs*>2  \
 	TP53	c.1176A>G	p.S392S  \
 	TP53	c.1175C>T	p.S392L  \
 	';
 
-var mutationTracks = []; //initialize empty array
+var variantObjects = widget.helpers.parseVariantString(variantString);
+var variantCounts = widget.helpers.aggregate(variantObjects);
+
+var variantTracks = []; //initialize empty array
 var track1 = {
 	label: 'Database #1',
-	data: mutationString
+	data: variantCounts
 };
 
 //add the object to 
-mutationTracks.push(track1);
+variantTracks.push(track1);
 ```
