@@ -687,7 +687,6 @@ jsProteinMapper = function(){
 		var nest = d3.nest()
 			.key(function(d){return d.codon; })
 			.key(function(d){return d.pdot; })
-			.key(function(d){return d.cdna; })
 			.entries(variants);
 		var arr=nest.map(function(e,i){
 			var parseAlteration=e.values[0].key.match(/(p\.\S\d+)/);
