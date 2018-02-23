@@ -661,14 +661,15 @@ jsProteinMapper = function(){
 		return f;
 	};	
 	function parseVariantString(geneName, variants){
-		m = variants.split(/\s+/);
+		m = variants.trim().split(/\s+/);
 		vArr = [];
-		for(ii=1;ii<m.length;ii+=3){
+		for(ii=0;ii<m.length-2;ii+=3){
 			var gene=m[ii];
 			var cdna=m[ii+1];
 			var prot=m[ii+2];
+			if(!gene || !prot || !cdna) continue;
 			var codon = prot.match(/p.[a-zA-Z](\d+)/);
-			if(gene.toLowerCase() == geneName.toLowerCase()){
+			if(gene.toLowerCase() == geneName.toLowerCase() && codon){
 				vArr.push({
 					codon: codon[1],
 					pdot:prot,

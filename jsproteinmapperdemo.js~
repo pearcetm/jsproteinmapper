@@ -185,7 +185,7 @@ function getDemoData(gene,callback){
 		case 'tp53': 
 			$.ajax({
     				type:'GET',
-    				url:'tp53.coding.cosmic84.demo.txt',
+    				url:'/assets/scripts/genomics/tp53.coding.cosmic84.demo.txt',
     				success:callback,
 					error:function(d){
 						console.log('Error loading demonstration tp53 data from COSMIC:', d);
@@ -195,7 +195,7 @@ function getDemoData(gene,callback){
 		case 'pik3ca':
 			$.ajax({
     				type:'GET',
-    				url:'pik3ca.coding.cosmic84.demo.txt',
+    				url:'/assets/scripts/genomics/pik3ca.coding.cosmic84.demo.txt',
     				success:callback,
 					error:function(d){
 						console.log('Error loading demonstration pik3ca data from COSMIC:', d);
@@ -205,7 +205,7 @@ function getDemoData(gene,callback){
 		case 'braf': 
 			$.ajax({
     				type:'GET',
-    				url:'braf.coding.cosmic84.demo.txt',
+    				url:'/assets/scripts/genomics/braf.coding.cosmic84.demo.txt',
     				success:callback,
 					error:function(d){
 						console.log('Error loading demonstration braf data from COSMIC:', d);
