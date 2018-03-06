@@ -35,8 +35,8 @@ function uniprotCallback(data,textStatus,jqXHR){
 					var variants1 = jspm.helpers.parseVariantString('BRAF', variant_string);
 					var variants2 = jspm.helpers.parseVariantString('braf', demo2);
 					
-					//var aggregated_variants1=jspm.helpers.aggregate(variants1, jspm.helpers.tooltips.variantPiechart);
-					var aggregated_variants1=jspm.helpers.aggregate(variants1, jspm.helpers.tooltips.variantBarchart);
+					
+					var aggregated_variants1=jspm.helpers.aggregate(variants1, jspm.helpers.tooltips.variantPiechart);
 					var aggregated_variants2=jspm.helpers.aggregate(variants2, jspm.helpers.tooltips.variantBarchart);
 					
 					jspm.setTracks([
@@ -56,7 +56,7 @@ function uniprotCallback(data,textStatus,jqXHR){
 				getDemoData('tp53',function(variant_string){
 					jspm.setVariant({codon:245, annotation:{'Protein alteration':'p.G245S'}});
 					var parsedVariantString = jspm.helpers.parseVariantString('tp53', variant_string);
-					var trackData = jspm.helpers.aggregate(parsedVariantString, jspm.helpers.tooltips.variantPiechart);
+					var trackData = jspm.helpers.aggregate(parsedVariantString);
 					jspm.setTracks([
 						{
 							label:'COSMIC v84', 
@@ -70,7 +70,7 @@ function uniprotCallback(data,textStatus,jqXHR){
 			   getDemoData('pik3ca',function(variant_string){
 					jspm.setVariant({codon:1047, annotation:{'Protein alteration':'p.H1047R'}});
 					var parsedVariantString = jspm.helpers.parseVariantString('pik3ca', variant_string);
-					var trackData = jspm.helpers.aggregate(parsedVariantString, jspm.helpers.tooltips.variantPiechart);
+					var trackData = jspm.helpers.aggregate(parsedVariantString);
 					jspm.setTracks([
 						{
 							label:'COSMIC v84', 
@@ -185,7 +185,7 @@ function getDemoData(gene,callback){
 		case 'tp53': 
 			$.ajax({
     				type:'GET',
-    				url:'/assets/scripts/genomics/tp53.coding.cosmic84.demo.txt',
+    				url:'tp53.coding.cosmic84.demo.txt',
     				success:callback,
 					error:function(d){
 						console.log('Error loading demonstration tp53 data from COSMIC:', d);
@@ -195,7 +195,7 @@ function getDemoData(gene,callback){
 		case 'pik3ca':
 			$.ajax({
     				type:'GET',
-    				url:'/assets/scripts/genomics/pik3ca.coding.cosmic84.demo.txt',
+    				url:'pik3ca.coding.cosmic84.demo.txt',
     				success:callback,
 					error:function(d){
 						console.log('Error loading demonstration pik3ca data from COSMIC:', d);
@@ -205,7 +205,7 @@ function getDemoData(gene,callback){
 		case 'braf': 
 			$.ajax({
     				type:'GET',
-    				url:'/assets/scripts/genomics/braf.coding.cosmic84.demo.txt',
+    				url:'braf.coding.cosmic84.demo.txt',
     				success:callback,
 					error:function(d){
 						console.log('Error loading demonstration braf data from COSMIC:', d);
