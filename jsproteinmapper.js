@@ -692,9 +692,10 @@ jsProteinMapper = function(){
 		var arr=nest.map(function(e,i){
 			var parseAlteration=e.values[0].key.match(/(p\.\S\d+)/);
 			var wt=parseAlteration[0];
+			var wt_aa = wt.substr(2,1).toLowerCase();
 			var mut = {
 					codon:e.key,
-					count:m.get(e.key).length,
+					count:m.get(e.key).filter(function(d){return d.pdot.slice(wt.length).toLowerCase() != wt_aa; }).length,
 					wildtype:wt
 				};
 			var alterations = e.values.map(function(e){
@@ -707,7 +708,7 @@ jsProteinMapper = function(){
 					label:l,
 					count:e.values.length
 				};
-			});
+			}).filter(function(d){ return d.label.toLowerCase() != wt_aa; });
 			
 			var nest=d3.nest()
 				.key(function(d){return d.label; })
@@ -750,7 +751,7 @@ jsProteinMapper = function(){
 	function variantTable(mut){
 		var e = mut.nestedAlterations; //this is probably broken!
 		var ttinfo={
-			title:'Codon '+mut.codon,
+			title:'Codon '+mut.wildtype,
 			'# of variants':mut.count,
 			'Distinct protein changes':e.length,
 			};
@@ -762,8 +763,7 @@ jsProteinMapper = function(){
 				var alt = '- ' + el.key;
 				ttinfo[alt] = el.value==1? el.value + ' occurrence' : el.value + ' occurrences';
 			}
-			ttinfo['Others'] = (v.length-4) +'('+ d3.sum(v.slice(4),function(d){
-				return d.values.length;}) +' total)';
+			ttinfo['Others'] = (v.length-4) +'('+ d3.sum(v.slice(4),function(d){ return d.value;}) +' total)';
 		}
 		else{
 			for(var i=0;i<v.length;++i){

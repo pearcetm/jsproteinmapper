@@ -56,7 +56,7 @@ function uniprotCallback(data,textStatus,jqXHR){
 				getDemoData('tp53',function(variant_string){
 					jspm.setVariant({codon:245, annotation:{'Protein alteration':'p.G245S'}});
 					var parsedVariantString = jspm.helpers.parseVariantString('tp53', variant_string);
-					var trackData = jspm.helpers.aggregate(parsedVariantString, jspm.helpers.tooltips.variantPiechart);
+					var trackData = jspm.helpers.aggregate(parsedVariantString, jspm.helpers.tooltips.variantTable);
 					jspm.setTracks([
 						{
 							label:'COSMIC v84', 
