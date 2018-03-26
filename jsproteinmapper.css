@@ -1,6 +1,14 @@
 body{
 	font-family: arial;
 }
+
+/********* header logo **********/
+#logo {
+    height: 40px;
+    width: 80px;
+    margin-top: 20px;
+}
+
 .content{
 	width:800px;
 	margin:10px auto;
@@ -90,4 +98,37 @@ body{
 }
 .d3-tip span{
     margin:0.1em auto;
+}
+
+/********** Footer style **************************/
+.footer {
+	background-color:rgb(240,250,250);
+    padding: 10px 20px;
+    font-size: 12px;
+    margin-top:2em;
+}
+.footer-section-title {
+	font-weight: bold;
+}
+
+.footer-section-text {
+	font-weight: normal;
+}
+
+.disclaimer-text {
+	font-weight: normal;
+    font-style: italic;
+}
+
+/********** Credit section ***********************/
+.crop {
+  height:67px;
+  width: 67px;
+  overflow: hidden;
+}
+
+#cosmic-logo {
+	height:70px;
+  width: 70px;
+	margin: -1.25px 0 0 -1.25px;
 }

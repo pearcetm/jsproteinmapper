@@ -2,39 +2,142 @@
 <!DOCTYPE html>
 <html>
 <head>
-<link href="//code.jquery.com/ui/1.11.2/themes/smoothness/jquery-ui.min.css" rel="stylesheet" type="text/css" />
-<script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
-<script src="//code.jquery.com/ui/1.11.2/jquery-ui.min.js"></script>
-
-<script src='https://cdnjs.cloudflare.com/ajax/libs/d3/4.3.0/d3.min.js'></script>
-<script src='d3tip.js'></script>
-<script src='jsproteinmapper.js'></script>
-<script src='jsproteinmapperdemo.js'></script>
-<link href='jsproteinmapper.css' rel='stylesheet' type='text/css' />
-<link href='jsproteinmapperdemo.css' rel='stylesheet' type='text/css' />
+	<!--Stylesheets-->
+	<link href="http://code.jquery.com/ui/1.11.2/themes/smoothness/jquery-ui.min.css" rel="stylesheet" type="text/css" />
+	<link href='jsproteinmapper.css' rel='stylesheet' type='text/css' />
+	<link href='jsproteinmapperdemo.css' rel='stylesheet' type='text/css' />
+	<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
   <meta charset="utf-8">
   <title>jsProteinMapper</title>
 </head>
-<body class="content">
-<div id="controls" class="content">
-	Tip: search for <strong>BRAF, TP53 or PIK3CA</strong> to see the widget in action with example (fake) cohort data.
-	<hr>
-	<input type="text" placeholder="Enter gene symbol here"><button type="button">Search and draw</button>
-</div>
-<div id='gene-name'>No gene loaded. Please search above.</div>
-<div id="gene-info" class="content"></div>
-<div>
-	<h3>Instructions</h3>
-	<p>Different sample genes have different tooltip behavior - try them all! 
+<body>
+<div class="content">
+	<header id="header">
+    	<div class="container">
+       <div class="row">
+         <div class="col-xs-1">
+           <img src="jsproteinmapper-icon.png" alt="jsproteinmapper-icon" id="logo">
+         </div>
+         <div class="col-xs-11">
+      			<h1>jsProteinmapper
+              	<small class="text-muted">Mapping variant(s) to protein domains</small>
+      	    </h1>
+         </div>
+       </div>
+      </div>
+	    <p style="padding:10px 0px;;font-size: 16px;">This is a demo page for the jsProteinmapper which provides a subset of non-synonymous variants from COSMIC database (v84)<sup>$</sup> for BRAF, PIK3CA, and TP53 genes for users to checkout the features of this widget.</p>
+    </header>
+	<div id="controls" class="content">
+		Tip: search for <strong>BRAF, TP53 or PIK3CA</strong> to see the widget in action!
+		<hr>
+		<input type="text" placeholder="Enter gene symbol here"><button type="button">Search and draw</button>
+	</div>
+	<div id='gene-name'>No gene loaded. Please search above.</div>
+	<div id="gene-info" class="content"></div>
+
+  <!---section for instructions to use the widget-->
+  <section class="instructions">
+		<h3>Demo page instructions</h3>
 		<ul>
-		<li>BRAF has two mutation tracks, one with a pie chart and one with a bar chart</li>
-		<li>TP53 has a table of text.</li>
-		<li>PIK3CA shows no-tooltip behavior</li>
+			<li>Different sample genes have different tooltip options - try them all! These are configurable in the library
+				<ul>
+					<li>BRAF has two mutation tracks, one with a pie chart and one with a bar chart</li>
+					<li>TP53 has a table of text.</li>
+					<li>PIK3CA shows no-tooltip behavior</li>
+				</ul>
+			</li>
+			<li>
+				Controls / actions
+				<ul>
+					<li>Zoom/pan X axis with scroll/drag, or touch events on the protein structure</li>
+					<li>Double-click zooms in X or Y depending on target</li>
+					<li>Mod-  (ctrl-,  shift-, cmd-) scroll to zoom bar graphs, or touch events on the graphs</li>
+					<li>Mod-click-and-drag to draw zoom rectangle</li>
+				</ul>
+			</li>
 		</ul>
-	</p>
-	<p>Zoom/pan X axis with scroll/drag, or touch events on the protein structure</p>
-	<p>Double-click zooms in X or Y depending on target</p>
-	<p>Mod-  (ctrl-,  shift-, cmd-) scroll to zoom bar graphs, or touch events on the graphs</p>
-	<p>Mod-click-and-drag to draw zoom rectangle</p>
+	</section>
+	<br />
+  <!--Section for credits for the demo page-->
+	<section class="credits">
+		<h4>
+    	Credits for demo data
+      <small class="text-muted">with permission from</small>
+    </h4>
+    <div class="container">
+      <div class="row">
+        <div class="col-xs-8">
+					<ul>
+            <li>
+              <strong>COSMIC (Catalogue Of Somatic Mutations In Cancer) - v84</strong>
+              <ul>
+                <li>
+                  <a href="http://cancer.sanger.ac.uk/cosmic/license" target="_blank">COSMIC license information</a>
+                </li>
+                <li>
+                  <a href="https://cancer.sanger.ac.uk/cosmic/register" target="_blank">COSMIC registration page</a>
+                </li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+        <div class="col-xs-4">
+					<div class="crop">
+          	<img id="cosmic-logo" src="https://pbs.twimg.com/profile_images/938071578524471296/I_GtKGcR_400x400.jpg" alt="Cosmic">
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+  </section>
+
+	<section class="footer">
+      <footer>
+        <span class="footer-section-title">
+          Authors:
+        </span>
+        <span class="footer-section-text">
+        		<br />
+            Thomas Pearce, MD, PhD
+            <br />
+            Somak Roy, MD
+        </span>
+        <br />
+        <span class="footer-section-title">
+          Source code:
+        </span>
+        <span class="footer-section-text">
+          Visit our github project page &nbsp
+          <a href="https://github.com/pearcetm/jsproteinmapper" target="_blank">
+            <i class="fab fa-2x fa-github-square"></i>
+          </a>
+        </span>
+        <br /><br />
+        <span class="footer-section-title">
+          Copyright:
+        </span>
+        <span class="footer-section-text">
+          jsProteinmapper is licensed under the <a href="https://www.apache.org/licenses/LICENSE-2.0" target="_blank">Apache License v2.0</a>.
+        </span>
+        <br /><br />
+        <span class="footer-section-title">
+          Disclaimer:
+        </span>
+        <span class="disclaimer-text">
+          This webpage for jsComut library is for demonstration purpose only. The genomic data provided in this demonstration page or personal research data uploaded to this webpage for visualization does not constitute medical advice and should not be be treated as such. Data containing protected health information (PHI) should not be loaded on this demo page. No information is uploaded to or stored on the servers, however the authors are not responsbile for any breach of identifiable medical information if end user chooses to load data containing PHI.
+        </span>
+      </footer>
+    </section>
 </div>
+
+
+<!--Javascript libraries-->
+<script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
+<script src="http://code.jquery.com/ui/1.11.2/jquery-ui.min.js"></script>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/d3/4.3.0/d3.min.js'></script>
+<script src="https://use.fontawesome.com/releases/v5.0.8/js/all.js"></script>
+<script src='d3tip.js'></script>
+<script src='jsproteinmapper.js'></script>
+<script src='jsproteinmapperdemo.js'></script>
 </body>
