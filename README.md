@@ -144,8 +144,8 @@ $.ajax({
 	url:pfam_url,
 	type:'GET',
 	success:widget.helpers.pfamAjaxResults(function(r){ //use the helper function to add tooltips
-		jspm.setPfamData(r); //in the callback, set the pfam data 
-		jspm.drawWidget(); //then draw the widget
+		widget.setPfamData(r); //in the callback, set the pfam data 
+		widget.drawWidget(); //then draw the widget
 		}),
 	failure:function(data,textStatus,jqXHR){
 		console.log('Failed to fetch data from PFAM',JSON.stringify(data));
