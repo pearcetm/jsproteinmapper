@@ -488,6 +488,7 @@ jsProteinMapper = function(){
 		//Handle user options for controls and tooltip
 		if(opts.showControls==false) showControls.click();
 		if(opts.tooltip=='click') tooltipClick.click();
+		else tooltipHover.click();
 	}
 	
 	function drawHistogram(track){
