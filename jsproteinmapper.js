@@ -242,7 +242,7 @@ jsProteinMapper = function(){
 			.attr('class','variant has-tooltip')
 			.attr('y',0)
 			.attr('height',h)
-			.attr('x',function(d){ return xscale(d.codon); })
+			.attr('x',function(d){ return xscale(d.codon-0.5); })
 			.attr('width',function(d){ return Math.max(xscale(1)-xscale(0), 1); })
 			.attr('fill',opts.variantColor)
 			.attr('stroke','none')
@@ -500,7 +500,7 @@ jsProteinMapper = function(){
 			.enter()
 			.append('g')
 			.attr('class','bar bar-x has-tooltip')
-			.attr('transform',(d)=>'translate('+xscale(d.codon)+',0)')
+			.attr('transform',(d)=>'translate('+xscale(d.codon-0.5)+',0)')
 			.append('g')
 			.attr('transform','translate(0,'+yscale.range()[0]+')')
 			.append('g')
@@ -528,11 +528,11 @@ jsProteinMapper = function(){
 		p.each(function(d){
 			var g=d3.select(this);
 			g.selectAll('*').remove();
-			var drawer = d.drawTrackItem ? d.drawTrackItem : defaultBar;
+			var draw = d.drawTrackItem ? d.drawTrackItem : defaultBar;
 			var y=d.yscale;
 			var data=d.d;
 			g.datum(data);
-			drawer(g,d.yscale);
+			draw(g,d.yscale);
 		})
 	}
 	function defaultBar(g,y){
@@ -681,12 +681,12 @@ jsProteinMapper = function(){
 		d3.selectAll('.xaxis.top').call(xaxis_top);
 		
 		d3.selectAll('.variant')
-			.attr('x',function(d){ return newX(d.codon)-Math.max(newX(0.5)-newX(0), 0.5); })
+			.attr('x',function(d){ return newX(d.codon-0.5); })
 			.attr('width',function(d){ return Math.max(newX(1)-newX(0), 1); });
 		
 		d3.selectAll('.bar-x')
 			.attr('transform',(d)=>{
-				return 'translate('+newX(d.codon)+',0)'
+				return 'translate('+newX(d.codon-0.5)+',0)'
 				//return 'translate('+(newX(d.codon)-Math.max(newX(0.5)-newX(0), 0.5))+',0)'
 			}).select('.bar-scale-x')
 			.attr('transform',(d)=>{
