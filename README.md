@@ -6,7 +6,7 @@ This guide contains information for:
 - [developers](#for-developers): how to add the widget to your page, configure it with your desired data sources, and interact with it using javascript.
 
 # Demo
-<a href="https://bl.ocks.org/pearcetm/raw/253c2552ad6ed617c7601c09918998e4/" target="blank">Checkout it out</a>  
+<a href="https://pearcetm.github.io/jsproteinmapper" target="_blank">Check it out</a>  
 
 # For users
 The jsProteinMapper widget lets you see where a variant of interest falls in relation to the structure of the protein - for example, if it is in a functional domain, or at the site of a particular active group. In addition, it can display graphs ("tracks") of previously-reported data for context. In order to interactively explore the data, use your mouse or touchscreen to zoom in and out, navigate around the protein, and show/hide information.
@@ -144,8 +144,8 @@ $.ajax({
 	url:pfam_url,
 	type:'GET',
 	success:widget.helpers.pfamAjaxResults(function(r){ //use the helper function to add tooltips
-		jspm.setPfamData(r); //in the callback, set the pfam data 
-		jspm.drawWidget(); //then draw the widget
+		widget.setPfamData(r); //in the callback, set the pfam data 
+		widget.drawWidget(); //then draw the widget
 		}),
 	failure:function(data,textStatus,jqXHR){
 		console.log('Failed to fetch data from PFAM',JSON.stringify(data));
