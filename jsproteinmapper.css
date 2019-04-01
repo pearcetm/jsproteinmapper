@@ -1,108 +1,36 @@
+body{
+	font-family: arial;
+}
 
-.jsproteinmapper .svgcontainer{
-	margin:0 auto;
+/********* header logo **********/
+#logo {
+    height: 40px;
+    width: 80px;
+    margin-top: 20px;
 }
-.jsproteinmapper .proteinlabelcontainer{
-	text-align: center;
+
+.content{
+	width:800px;
+	margin:10px auto;
 }
-.jsproteinmapper .svgcontainer{
-	position:relative;
-	overflow:hidden;
-	box-sizing:border-box;
-}
-.jsproteinmapper .loading-overlay{
-	position:absolute;
-	top:0;
-	left:0;
-	right:0;
-	bottom:0;
-	z-index: :101;
-	background-color:white;
+#gene-name{
 	text-align:center;
-	box-sizing:border-box;
-			
 }
-
-.options-window, .options-background{
-  position:absolute;
-  left:0;
-  top:0;
-  width:100%;
-  height:100%;
-  box-sizing:border-box;
+#gene-container{
+	width:800px;
+	padding:10px;
 }
-.options-background{
-  background-color:rgba(0,0,0,0.5);
+#gene-info{
+	border: thin black solid;
+	border-radius:5px;
+	padding:5px;
 }
-.options-panel{
-  display:inline-block;
-  max-width:80%;
-  max-height:80%;
-  overflow:visible;
-  position:absolute;
-  left:50%;
-  top:10%;
-  transform:translateX(-50%);
-  background-color:white;
-  padding:10px;
+#controls{
+	text-align:center;
+	border:none;
 }
-.options-dialog{
-  max-height:100%;
-  max-width:100%;
-  overflow:auto;
-}
-.option-item{
-  margin:0.5em 0;
-}
-.option-text{
-  margin-right:0.5em;
-}
-
-.control-object{
-  overflow:visible;
-}
-.controls{
-  background-color:white;
-  position:absolute;
-  right:0;
-  top:0;
-  padding:2px;
-  display:flex;
-  flex-direction:row;
-}
-.user-controls{
-  top:inherit;
-  bottom:2px;
-}
-.zoom-controls{
-  flex-direction: column;
-  align-items:center;
-  right:3px;
-  top:3px;
-  box-shadow:-3px 3px 15px 3px lightgray;
-}
-.zoom-controls .mid{
-  display:flex;
-  flex-direction: row;
-}
-.axis-controls{
-  padding-right:1.3em;
-  top:2px;
-  display:flex;
-  box-sizing:border-box;
-  justify-content:flex-end;
-  flex-wrap:wrap;
-  background-color:inherit;
-  /*box-shadow:-3px 3px 15px 3px lightgray;*/
-}
-.control-button{
-  background-clip:padding-box;
-}
-.control-button.active{
-  background-color:lightblue;
-}
-.control-button:focus {
-  outline: none;
+#controls>input{
+	width:400px;
 }
 
 /* From https://github.com/Caged/d3-tip/blob/master/examples/example-styles.css */
@@ -168,33 +96,39 @@
 	display:'inline-block';
 	padding:5px 15px;
 }
-.tooltip-close, .close-button{
-  position:absolute;
-  top:-0.7em;
-  right:-0.7em;
-  width:1em;
-  height:1em;
-  box-sizing:border-box;
-  border-radius:0.5em;
-  border:thin black solid;
-  background-color:red;
-  cursor:pointer;
-  pointer-events:all;
-}
-.tooltip-close:after, .close-button:after{
-  content:'x';
-  font-family:arial;
-  position:absolute;
-  top:50%;
-  left:50%;
-  transform:translate(-50%, -50%);
-}
-.tooltip-hover .tooltip-close{
-  visibility:hidden;
-}
-.tooltip-click .has-tooltip{
-  cursor:pointer;
-}
 .d3-tip span{
     margin:0.1em auto;
+}
+
+/********** Footer style **************************/
+.footer {
+	background-color:rgb(240,250,250);
+    padding: 10px 20px;
+    font-size: 12px;
+    margin-top:2em;
+}
+.footer-section-title {
+	font-weight: bold;
+}
+
+.footer-section-text {
+	font-weight: normal;
+}
+
+.disclaimer-text {
+	font-weight: normal;
+    font-style: italic;
+}
+
+/********** Credit section ***********************/
+.crop {
+  height:67px;
+  width: 67px;
+  overflow: hidden;
+}
+
+#cosmic-logo {
+	height:70px;
+  width: 70px;
+	margin: -1.25px 0 0 -1.25px;
 }
