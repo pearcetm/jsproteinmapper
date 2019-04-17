@@ -12,7 +12,7 @@ This guide contains information for:
 The jsProteinMapper widget lets you see where a variant of interest falls in relation to the structure of the protein - for example, if it is in a functional domain, or at the site of a particular active group. In addition, it can display graphs ("tracks") of previously-reported data for context. In order to interactively explore the data, use your mouse or touchscreen to zoom in and out, navigate around the protein, and show/hide information.
 
 ## Zooming in and out
-By default, the structure of the whole protein is displayed in the widget. However, this "wide view" can make it hard to see certain details around locations of interest. The widget provides a number of ways to zoom in to show the data most effectively.
+By default, the structure of the whole protein is displayed in the widget. However, this "wide view" can make it hard to see certain details around locations of interest. Similarly, each variant track is initially scaled to show the full range of the data. The widget provides a number of ways to zoom in and out to explore the data most effectively.
 
 - Using the scroll wheel (mouse - anywhere on the widget) or pinch gesture (touchscreen - on the protein structure), you can control the zoom on the X-axis to get a closer look. Click (or touch) and drag lets you move the whole structure left or right.
 - Double-clicking on the protein structure will also zoom in (X-axis)
@@ -20,8 +20,15 @@ By default, the structure of the whole protein is displayed in the widget. Howev
 - If you are using a PC, the variant tracks can also be zoomed in and out using the mouse wheel while holding the shift key. On a touch-enabled device, you can zoom on variant tracks using pinch gestures on the track of interest.
 - To zoom directly to an area of interest, hold shift while clicking and dragging. This will draw a rectangle, and the widget will zoom to that region when you release the mouse button. If this is done on a variant track, you can zoom in X and Y simultaneously.
 
+In addition, each variant track contains a control panel with buttons for zooming in and out of both axes, and resetting the axes to the initial zoom level. The y-axis scale can be drawn with either a linear (default) or logarithmic scale. The control panels can be turned on and off using the [options window](#optionswindow).  
+
 ## Showing more information
-To see more information - for example, details of a protein domain or a variant - simply hover your mouse (or tap a touchscreen) to reveal a popup tooltip. 
+To see more information - for example, details of a protein domain or a variant - simply hover your mouse (or tap a touchscreen) to reveal a popup tooltip. If you prefer clicking, rather than hovering, to show the tooltip, use the [options window](#optionswindow) to choose this mode of action.
+
+## Using the options window to configure behavior
+In the upper right corner of widget is an "Options" button, which brings up a window with options for configuring the behavior of certain actions: 
+- Show/hide the clickable control panels
+- Switch between click and hover mode for showing additional information in the tooltip
 
 # For developers
 ## Adding the widget to a webpage
@@ -322,26 +329,80 @@ $.ajax({
 ## Variant tracks
 To provide data for the widget to use for drawing variant tracks above the protein structure, pass in an array of objects. Each object must contain the title for the track in the "label" field, and an array of objects in the "data" field.
 
-The data must be an array of objects; each object should contain properties `codon` and `count`. Additional propertiescan be optionally included and used to create tooltips with more detailed information about the variants reported at each location. See [helpers.aggregate](#helpersaggregate) for more information.
+The data must be an array of objects; each object must contain the property `codon` (required). By default, a simple histogram (bar chart) will be created to plot the number of events at each codon. To use this default histogram, a property `count` is required, describing how many events occurred at each codon. Bars are black by default, but if a `color` property is defined, the specified color will be used instead. Additional properties can be optionally included and used to create tooltips with more detailed information about the variants reported at each location. See [helpers.aggregate](#helpersaggregate) for more information.
+
+**To use the default histogram:**
 
 ```javascript
 var data = [
 	{
 		codon: 1,
 		count: 5
+		//this bar will be black by default
 	},
 	{
 		codon: 2,
-		count: 3
+		count: 3,
+		color: 'black', //black is explicitly defined
 	},
 	{
 		codon: 3,
-		count: 15
+		count: 15,
+		color: 'red', //this bar will be red
 	}
 ];
 ```
 
-Beginning from a whitespace separated list of tuples, the [parseVariantString](#helpersparsevariantstring) and [aggregate](#helpersaggregate) helper functions to create an appropriate array.
+**Advanced usage:** The `drawTrackItem` property can be used to pass a callback function, which can be used to draw any desired visual representation of the data at the codon. The callback function signature should be `function(group,scale)`. Arguments:
+1) `group`, the current `<g>` element, which is already transformed to the appropriate location for the codon, and which additional SVG elements should be added to. 
+2) `scale`, a function which will convert a numeric 'count' value to the appropriate pixel position.
+
+> ***Important:* In order to make the element render appropriately while zooming or changing the axis scale, you must also provide a `redraw` function to update any necessary attributes (typically `y` and/or `height`)**
+
+*Example of custom draw callback:*
+```javascript
+var data = [
+	{
+		codon: 1,
+		count: 5
+		//solid black bar, by default
+	},
+	{
+		codon: 2,
+		count:8,
+		bars: [
+			{
+				start:0,
+				end:5,
+				color:'blue'
+			},
+			{
+				start:5,
+				end:8,
+				color:'red'
+			},
+		],
+		drawTrackItem: function(g,scale){
+			g.selectAll('rect')
+				.data((d) => d.bars)
+				.enter()
+				.append('rect')
+				.attr('class','redraw')
+				.attr('y',(d) => scale(d.start) )
+				.attr('height',(d) => scale(d.end) - scale(d.start) )
+				.attr('width',1)
+				.attr('fill',(d) => d.color)
+				.datum((d) => { d.redraw=redraw; return d;} )
+			function redraw(el,newY){
+				el.attr('y',(d) => newY(d.start) )
+					.attr('height',(d) => newY(d.end) - newY(d.start) )
+			}
+		}
+	}
+];
+```
+
+*Example*: Beginning from a whitespace separated list of tuples, use the [parseVariantString](#helpersparsevariantstring) and [aggregate](#helpersaggregate) helper functions to create an appropriate array.
 
 ```javascript
 //create a whitespace-separated list with tuples [genename cdna pdot]
