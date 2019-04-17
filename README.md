@@ -121,7 +121,12 @@ default_options = {
 		padding:25,
     
     //trackFillColor: background color for variant tracks
-		trackFillColor:'none'
+		trackFillColor:'none',
+		
+    //showControls: [true|false] initial option for showing/hiding control panels.		
+		showControls:true,
+    //tooltip: ['hover'|'click'] inital option for tooltip behavior		
+		tooltip:'hover',
 	};
 ```
 
