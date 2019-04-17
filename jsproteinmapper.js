@@ -513,7 +513,7 @@ jsProteinMapper = function(){
 			.selectAll('.track-item')
 			.data((d)=>{
 				var data={
-					yscale:(val)=>yscale.range()[0]-yscale(val),
+					yscale:(val)=>yscale.range()[0]-yscale(Math.max(val,yscale.domain()[0])),
 					d:d
 				}
 				return [data];
@@ -529,7 +529,7 @@ jsProteinMapper = function(){
 		p.each(function(d){
 			var g=d3.select(this);
 			g.selectAll('*').remove();
-			var draw = d.drawTrackItem ? d.drawTrackItem : defaultBar;
+			var draw = d.d.drawTrackItem ? d.d.drawTrackItem : defaultBar;
 			var y=d.yscale;
 			var data=d.d;
 			g.datum(data);
@@ -729,7 +729,7 @@ jsProteinMapper = function(){
 		
 		track.selectAll('.track-item .redraw')
 			.each(function(d){
-				d.redraw(d3.select(this),(c)=>y.range()[0]-y(c))
+				d.redraw(d3.select(this),(c)=>y.range()[0]-y(Math.max(c,y.domain()[0])) )
 			})
 
 		d.yaxis.scale(y);
